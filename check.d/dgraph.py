@@ -2,7 +2,6 @@ import urllib
 import json
 
 from checks import AgentCheck
-from urlparse import urlparse
 
 def _is_available(endpoint):
     try:
@@ -15,9 +14,8 @@ def _is_available(endpoint):
         else:
             return 0
 
-# groups['1']['members']
 def _get_status(nodes, port, path):
-    quorum = round(len(nodes)/2, 1)
+    quorum = round(len(nodes)/float(2))
     healthy_nodes = 0
     for node_id in nodes:
         node = nodes[node_id]
@@ -25,10 +23,10 @@ def _get_status(nodes, port, path):
         endpoint = 'http://' + addr + ':' + port + path
         healthy_nodes += _is_available(endpoint)
     
-    if quorum > healthy_nodes:
+    if healthy_nodes < quorum:
         return 0
     else:
-        if quorum - healthy_nodes > 0:
+        if healthy_nodes - quorum > 0:
             return 2
         else:
             return 1
