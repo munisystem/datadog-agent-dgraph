@@ -18,7 +18,7 @@ def _get_status(nodes, path):
     healthy_nodes = 0
     for node_id in nodes:
         node = nodes[node_id]
-        endpoint = members[node_id]['addr'] + path
+        endpoint = node['addr'] + path
         healthy_nodes += _is_available(endpoint)
     
     if quorum > healthy_nodes:
@@ -29,8 +29,7 @@ def _get_status(nodes, path):
         else:
             return 1
 
-if __name__ == '__main__':
-    url = 'http://localhost:6080/state'
+def _get_health(url):
     try:
         req = urllib2.urlopen(url)
     except urllib2.HTTPError as e:
@@ -51,8 +50,12 @@ if __name__ == '__main__':
         results.append(_get_status(zeros, '/state'))
 
         if 0 in results:
-            print('red')
+            return 0
         elif 1 in results:
-            print('yellow')
+            return 1
         else:
-            print('green')
+            return 2
+
+if __name__ == '__main__':
+    url = 'http://localhost:6080/state'
+    print(_get_health(url))
