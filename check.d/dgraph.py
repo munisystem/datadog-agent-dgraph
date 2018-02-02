@@ -62,10 +62,9 @@ class DgraphCheck(AgentCheck):
     def __init__(self, name, init_config, agentConfig, instances=None):
         AgentCheck.__init__(self, name, init_config, agentConfig, instances)
     def check(self, instance):
-        addr = instance.get('addr')
-        if addr is None:
-            raise Exception("addr must be specified in the instance.")
+        url = instance.get('url')
+        if url is None:
+            raise Exception('url must be specified in the instance.')
 
-        endpoint = addr + "/state"
-        health = _get_health(endpoint)
+        health = _get_health(url)
         self.gauge('dgraph.cluster_health', health)
