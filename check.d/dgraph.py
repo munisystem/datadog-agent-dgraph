@@ -14,13 +14,14 @@ def _is_available(endpoint):
         else:
             return 0
 
-def _get_status(nodes, port, path):
+def _get_status(nodes, path):
     quorum = round(len(nodes)/float(2))
     healthy_nodes = 0
     for node_id in nodes:
         node = nodes[node_id]
-        addr = node['addr'].split(':')[0]
-        endpoint = 'http://' + addr + ':' + port + path
+        addr, port = node['addr'].split(':')
+        http_port = str(int(port) + 1000)
+        endpoint = 'http://' + addr + ':' + http_port + path
         healthy_nodes += _is_available(endpoint)
     
     if healthy_nodes < quorum:
@@ -46,10 +47,10 @@ def _get_health(endpoint):
         # check groups
         for group_id in groups:
             members = groups[group_id]['members']
-            results.append(_get_status(members, '8080', '/health'))
+            results.append(_get_status(members, '/health'))
 
         # check zeros
-        results.append(_get_status(zeros, '6080', '/state'))
+        results.append(_get_status(zeros, '/state'))
 
         if 0 in results:
             return 0
