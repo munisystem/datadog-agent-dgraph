@@ -68,4 +68,4 @@ class DgraphCheck(AgentCheck):
             raise Exception('url must be specified in the instance.')
 
         health = _get_health(url)
-        self.gauge('dgraph.cluster_health', health)
+        self.service_check('dgraph.cluster_health', health)
